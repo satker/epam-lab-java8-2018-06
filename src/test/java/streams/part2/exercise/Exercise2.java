@@ -189,7 +189,7 @@ public class Exercise2 {
                         new Person("Александр", "Дементьев", 28),
                         Arrays.asList(
                                 new JobHistoryEntry(1, "tester", "EPAM"),
-                                new JobHistoryEntry(1, "dev", "EPAM"),
+                                new JobHistoryEntry(2, "dev", "EPAM"),
                                 new JobHistoryEntry(1, "dev", "google")
                         )),
                 new Employee(
