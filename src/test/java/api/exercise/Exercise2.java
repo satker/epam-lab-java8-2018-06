@@ -50,11 +50,9 @@ public class Exercise2 {
     private static <T> T[] sequentialPrefix(T[] source, BinaryOperator<T> operator) {
         T[] result = source.clone();
         for (int i = 0; i < source.length; i++) {
-            if (i != 0) {
-                result[i] = operator.apply(source[i], result[i - 1]);
-            } else {
-                result[0] = source[0];
-            }
+            result[i] = i == 0 ?
+                    source[0] :
+                    operator.apply(source[i], result[i - 1]);
         }
         return result;
     }
