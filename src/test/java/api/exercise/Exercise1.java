@@ -4,6 +4,7 @@ import lambda.data.Person;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -29,8 +30,14 @@ public class Exercise1 {
         candidates.put(ivan, Status.PENDING);
         candidates.put(helen, Status.PENDING);
 
-        // TODO реализация
-
+        for (Map.Entry<Person, Status> personAndStatus : candidates.entrySet()) {
+            Person person = personAndStatus.getKey();
+            if (personAndStatus.getKey().getAge() <= 21) {
+                candidates.put(person, Status.DECLINED);
+            } else {
+                candidates.put(person, Status.ACCEPTED);
+            }
+        }
         assertEquals(Status.ACCEPTED, candidates.get(ivan));
         assertEquals(Status.ACCEPTED, candidates.get(helen));
         assertEquals(Status.DECLINED, candidates.get(alex));
@@ -50,7 +57,16 @@ public class Exercise1 {
         candidates.put(new Person("b", "c", 16), Status.PENDING);
         candidates.put(new Person("b", "c", 5), Status.PENDING);
 
-        // TODO реализация
+        Iterator<Map.Entry<Person, Status>> iterator = candidates.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Person, Status> personAndStatus = iterator.next();
+            Person person = personAndStatus.getKey();
+            if (person.getAge() > 21) {
+                candidates.put(person, Status.ACCEPTED);
+            } else {
+                iterator.remove();
+            }
+        }
 
         Map<Person, Status> expected = new HashMap<>();
         expected.put(ivan, Status.ACCEPTED);
@@ -67,11 +83,9 @@ public class Exercise1 {
         candidates.put(alex, Status.PENDING);
         candidates.put(ivan, Status.PENDING);
 
-        // TODO реализация
-
-        Status alexStatus = null;
-        Status ivanStatus = null;
-        Status helenStatus = null;
+        Status alexStatus = candidates.getOrDefault(alex, Status.UNKNOWN);
+        Status ivanStatus = candidates.getOrDefault(ivan, Status.UNKNOWN);
+        Status helenStatus = candidates.getOrDefault(helen, Status.UNKNOWN);
 
         assertEquals(Status.PENDING, alexStatus);
         assertEquals(Status.PENDING, ivanStatus);
@@ -93,8 +107,11 @@ public class Exercise1 {
         newValues.put(alex, Status.DECLINED);
         newValues.put(helen, Status.PENDING);
 
-        // TODO реализация
-
+        for (Person oldPerson : oldValues.keySet()) {
+            if (!newValues.containsKey(oldPerson)) {
+                newValues.put(oldPerson, oldValues.get(oldPerson));
+            }
+        }
         assertEquals(Status.DECLINED, newValues.get(alex));
         assertEquals(Status.ACCEPTED, newValues.get(ivan));
         assertEquals(Status.PENDING, newValues.get(helen));
