@@ -6,18 +6,25 @@ import lambda.data.Person;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings({"ConstantConditions", "unused"})
-public class Exercise1 {
+public class
+Exercise1 {
 
     @Test
     public void findPersonsEverWorkedInEpam() {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toList()
-        List<Person> personsEverWorkedInEpam = null;
+        List<Person> personsEverWorkedInEpam = employees.stream().
+                filter(employee -> employee.getJobHistory().
+                        stream().
+                        anyMatch(job -> job.getEmployer().equals("EPAM"))).
+                map(Employee::getPerson).
+                collect(Collectors.toList());
 
         List<Person> expected = Arrays.asList(
                 employees.get(0).getPerson(),
@@ -32,7 +39,10 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toList()
-        List<Person> startedFromEpam = null;
+        List<Person> startedFromEpam = employees.stream().
+                filter(employee -> employee.getJobHistory().get(0).getEmployer().equals("EPAM")).
+                map(Employee::getPerson).
+                collect(Collectors.toList());
 
         List<Person> expected = Arrays.asList(
                 employees.get(0).getPerson(),
@@ -46,7 +56,11 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация, использовать Collectors.toSet()
-        Set<String> companies = null;
+        Set<String> companies = employees.stream().
+                map(employee -> employee.getJobHistory().stream()).
+                flatMap(jobHistoryEntryStream -> jobHistoryEntryStream.map(JobHistoryEntry::getEmployer)).
+                map(String::toString).
+                collect(Collectors.toSet());
 
         Set<String> expected = new HashSet<>();
         expected.add("EPAM");
@@ -62,7 +76,9 @@ public class Exercise1 {
         List<Employee> employees = getEmployees();
 
         // TODO реализация
-        Integer minimalAge = null;
+        Integer minimalAge = employees.stream().
+                map(employee -> employee.getPerson().getAge()).
+                min(Integer::compareTo).get();
 
         assertEquals(21, minimalAge.intValue());
     }
