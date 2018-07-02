@@ -63,12 +63,15 @@ public class Exercise2 {
     public void calcTotalSalaryWithCoefficientWorkExperience() {
         List<Employee> employees = getEmployees();
 
+        final int CUSTOM_RATE = 75_000;
+        final int MAX_RATE = 90_000;
+
         int expected = employees.stream().
                 map(Employee::getJobHistory).
-                mapToInt(jobHistoryEntries -> jobHistoryEntries.
-                        get(jobHistoryEntries.size() - 1).
-                        getDuration() > 3 ?
-                        90_000 : 75_000).
+                map(jobHistoryEntries -> jobHistoryEntries.
+                        get(jobHistoryEntries.size() - 1)).
+                mapToInt(job -> job.getDuration() > 3 ?
+                        MAX_RATE : CUSTOM_RATE).
                 sum();
 
         assertEquals(465000.0, expected, 0.001);
