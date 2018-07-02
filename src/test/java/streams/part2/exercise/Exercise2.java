@@ -6,6 +6,7 @@ import lambda.data.Person;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -68,7 +69,23 @@ public class Exercise2 {
     public void employersStuffList() {
         List<Employee> employees = getEmployees();
 
-        Map<String, Set<Person>> result = null;
+        Map<String, Set<Person>> result = employees.
+                stream().
+                flatMap(employee -> employee.getJobHistory().stream()).
+                map(JobHistoryEntry::getEmployer).
+                collect(Collectors.toMap(
+                        key -> key,
+                        key -> employees.
+                                stream().
+                                filter(employee -> employee.getJobHistory().
+                                        stream().
+                                        map(JobHistoryEntry::getEmployer).
+                                        anyMatch(empl -> empl.equals(key))).
+                                map(Employee::getPerson).collect(Collectors.toSet()),
+                        (value1, value2) -> {
+                            value2.addAll(value1);
+                            return value2;
+                        }));
 
         Map<String, Set<Person>> expected = new HashMap<>();
         expected.put("yandex", new HashSet<>(Collections.singletonList(employees.get(2).getPerson())));
@@ -142,7 +159,21 @@ public class Exercise2 {
     public void indexByFirstEmployer() {
         List<Employee> employees = getEmployees();
 
-        Map<String, Set<Person>> result = null;
+        Map<String, Set<Person>> result = employees.
+                stream().
+                map(employee -> employee.getJobHistory().get(0)).
+                map(JobHistoryEntry::getEmployer).
+                collect(Collectors.toMap(
+                        key -> key,
+                        key -> employees.
+                                stream().
+                                filter(employee -> employee.getJobHistory().get(0).getEmployer().equals(key)).
+                                map(Employee::getPerson).
+                                collect(Collectors.toSet()),
+                        (value1, value2) -> {
+                            value2.addAll(value1);
+                            return value2;
+                        }));
 
         Map<String, Set<Person>> expected = new HashMap<>();
         expected.put("yandex", new HashSet<>(Collections.singletonList(employees.get(2).getPerson())));
@@ -166,7 +197,22 @@ public class Exercise2 {
     public void greatestExperiencePerEmployer() {
         List<Employee> employees = getEmployees();
 
-        Map<String, Person> collect = null;
+        Map<String, Person> collect = employees.
+                stream().
+                flatMap(employee -> employee.getJobHistory().stream()).
+                map(JobHistoryEntry::getEmployer).
+                distinct().
+                collect(Collectors.toMap(
+                        key -> key,
+                        key -> employees.
+                                stream().
+                                filter(employee -> employee.getJobHistory().stream().
+                                        anyMatch(jobHistoryEntry -> jobHistoryEntry.getEmployer().equals(key))).
+                                reduce((employee1, employee2) ->
+                                        getJobHistoryAsInt(key, employee1) >
+                                                getJobHistoryAsInt(key, employee2)
+                                                ? employee1 : employee2).map(Employee::getPerson).get()
+                ));
 
         Map<String, Person> expected = new HashMap<>();
         expected.put("EPAM", employees.get(4).getPerson());
@@ -175,6 +221,15 @@ public class Exercise2 {
         expected.put("mail.ru", employees.get(2).getPerson());
         expected.put("T-Systems", employees.get(5).getPerson());
         assertEquals(expected, collect);
+    }
+
+    private int getJobHistoryAsInt(String key, Employee employee) {
+        return employee.getJobHistory().stream().
+                filter(jobHistoryEntry -> jobHistoryEntry.getEmployer().equals(key)).
+                mapToInt(JobHistoryEntry::getDuration).
+                reduce((jobHistoryEntry, jobHistoryEntry2) ->
+                        jobHistoryEntry + jobHistoryEntry2).
+                getAsInt();
     }
 
     private static List<Employee> getEmployees() {
