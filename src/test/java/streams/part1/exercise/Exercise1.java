@@ -57,9 +57,8 @@ Exercise1 {
 
         // TODO реализация, использовать Collectors.toSet()
         Set<String> companies = employees.stream().
-                map(employee -> employee.getJobHistory().stream()).
-                flatMap(jobHistoryEntryStream -> jobHistoryEntryStream.map(JobHistoryEntry::getEmployer)).
-                map(String::toString).
+                flatMap(employee -> employee.getJobHistory().stream()).
+                map(JobHistoryEntry::getEmployer).
                 collect(Collectors.toSet());
 
         Set<String> expected = new HashSet<>();
@@ -77,8 +76,8 @@ Exercise1 {
 
         // TODO реализация
         Integer minimalAge = employees.stream().
-                map(employee -> employee.getPerson().getAge()).
-                min(Integer::compareTo).get();
+                mapToInt(employee -> employee.getPerson().getAge()).
+                min().getAsInt();
 
         assertEquals(21, minimalAge.intValue());
     }
