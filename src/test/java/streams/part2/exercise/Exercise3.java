@@ -25,8 +25,12 @@ public class Exercise3 {
     public void extractEvenNumberedCharactersToNewString() {
         String source = "abcdefghijklm";
 
+        int halfSource = source.length() / 2;
+
         String result = IntStream.iterate(0, i -> i + 2).
-                limit(source.length()).
+                limit(source.length() % 2 == 0 ?
+                        halfSource :
+                        halfSource + 1).
                 mapToObj(source::charAt).
                 map(String::valueOf).
                 collect(Collectors.joining());
