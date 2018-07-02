@@ -21,7 +21,8 @@ public class Exercise1 {
         Long hours = employees.stream().
                 map(Employee::getJobHistory).
                 flatMap(Collection::stream).
-                filter(jobHistoryEntry -> jobHistoryEntry.getEmployer().equals("EPAM")).
+                filter(jobHistoryEntry -> jobHistoryEntry.getEmployer().
+                        equals("EPAM")).
                 mapToLong(JobHistoryEntry::getDuration).
                 sum();
 
